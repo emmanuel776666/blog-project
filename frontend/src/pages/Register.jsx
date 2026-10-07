@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-
+import api from '../services/api';
 import './Auth.css';
 
 function Register() {
@@ -13,44 +13,31 @@ function Register() {
 
     const [error, setError] = useState('');
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+            const handleSubmit = async (e) => {
+            e.preventDefault();
 
-        setError('');
+            setError('');
 
-        try {
+            try {
 
-            const response = await fetch(
-                'http://localhost:5000/api/auth/register',
-                {
+                await api('/auth/register', {
                     method: 'POST',
-
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
 
                     body: JSON.stringify({
                         name,
                         email,
                         password
                     })
-                }
-            );
+                });
 
-            const data = await response.json();
+                navigate('/login');
 
-            if (!response.ok) {
-                throw new Error(data.message);
+            } catch (error) {
+
+                setError(error.message);
+
             }
-
-            navigate('/login');
-
-        } catch (error) {
-
-            setError(error.message);
-
-        }
-    };
+        };
 
     return (
         <main className="auth-page">

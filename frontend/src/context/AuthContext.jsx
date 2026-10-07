@@ -1,8 +1,11 @@
 import { createContext, useState } from 'react';
 
+import api from '../services/api';
+
 const AuthContext = createContext();
 
 function AuthProvider({ children }) {
+
     const [user, setUser] = useState(
         JSON.parse(localStorage.getItem('user')) || null
     );
@@ -12,25 +15,15 @@ function AuthProvider({ children }) {
     );
 
     const login = async (email, password) => {
-        const response = await fetch(
-            'http://localhost:5000/api/auth/login',
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    email,
-                    password
-                })
-            }
-        );
 
-        const data = await response.json();
+        const data = await api('/auth/login', {
+            method: 'POST',
 
-        if (!response.ok) {
-            throw new Error(data.message);
-        }
+            body: JSON.stringify({
+                email,
+                password
+            })
+        });
 
         setUser(data.user);
         setToken(data.token);
@@ -49,6 +42,7 @@ function AuthProvider({ children }) {
     };
 
     const logout = () => {
+
         setUser(null);
         setToken(null);
 
